@@ -34,19 +34,19 @@
       var panorama;
 
       function initMap() {
-        var berkeley = {lat: 37.869085, lng: -122.254775};
+        var olsen = {lat: 42.6547, lng: -71.3261};
         var sv = new google.maps.StreetViewService();
         panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
 
         // Set up the map.
         map = new google.maps.Map(document.getElementById('map'), {
-          center: berkeley,
+          center: olsen,
           zoom: 16,
           streetViewControl: false
         });
 
         // Set the initial Street View camera to the center of the map
-        sv.getPanorama({location: berkeley, radius: 50}, processSVData);
+        sv.getPanorama({location: olsen, radius: 50}, processSVData);
 
         var myLatLng = new google.maps.LatLng(37.88,-122.24);
         var marker = new google.maps.Marker({position: myLatLng, map: map});
