@@ -1,8 +1,8 @@
 # What's done
 
 1. LeapMotion can talk to StreetView
-..* Map swipe up to access first link on StreetView and move down.
-.... Add a delay in between gestures to allow better response time
+   * Map swipe up to access first link on StreetView and move down.
+       * Add a delay in between gestures to allow better response time
 
 # Ideas
 
