@@ -1,8 +1,8 @@
 # What's done
 
 1. LeapMotion can talk to StreetView
-   * Map swipe up to access first link on StreetView and move down.
-       * Add a delay in between gestures to allow better response time
+   * Map swipe up accesses first link on StreetView and updates the panorama to it.
+       * Added a delay in between gestures to allow better response time
 
 # Ideas
 
@@ -18,3 +18,5 @@ Make sure to lock the focus of your gesture down when it has started to a single
 Avoid filtering gestures by z-position; its pretty difficult for users to really know how "deep" their hands are. relative Z-motion is fine, but absolute position is not a great hook.
 Limit gesture starts to well within the detection zone; you don't want them "brushing out" of range mid gesture.
 Detecting when fingers touch each other (pinch) is a bad route, as detecting fingerness of a closed finger loop is problematic at this point. You can detect a pinch, but make sure that you end the gesture while the fingers aren't quite touching.
+
+Idea to create a link cursor to signal which link is selected. Swipe left/right to move the cursor. Swipe up to select the link designated by the cursor. 
