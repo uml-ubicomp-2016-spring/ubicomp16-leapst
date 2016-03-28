@@ -41,7 +41,7 @@ function initMap() {
 
 }
 
-
+/*Function to adjust the Streetwise data.*/
 function processSVGestureData(linkData) {
     panorama.setPano(linkData.pano);
     panorama.setPov({
@@ -84,18 +84,19 @@ function processSVData(data, status) {
 }
 
 
-
+/*Main street view code.*/
 var previousFrame = null;
 var pauseOnGesture = false;
 var counter = 0;
 
 var controllerOptions = {enableGestures: true};
 
-
+/*Continuously update frame.*/
 Leap.loop(controllerOptions, function(frame) {
 
     /*
      A simple frame blocking mechanism for testing. 
+     Delays the frame input so that the user can respond better.
      */
     if (pauseOnGesture == true) {
         if (counter == 250) {
@@ -111,13 +112,15 @@ Leap.loop(controllerOptions, function(frame) {
     var gestureOutput = document.getElementById("gestureData");
 
     var gestureString;
-
+    
+    //Check that a gesture has been read and is valid.
     if (frame.gestures.length > 0 && frame.valid) {
         pauseOnGesture = true;
 
         for (var i = 0; i < frame.gestures.length; i++) {
             var gesture = frame.gestures[i];
 
+	    /*Determine which gesture the user is providing.*/
             switch (gesture.type) {
                 case "circle":
                     var clockwise = false;
@@ -136,7 +139,8 @@ Leap.loop(controllerOptions, function(frame) {
                     break;
                 case "swipe":
                     var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
-
+		
+		    /*Determine what direction is being swiped.*/
                     if (isHorizontal) {
                         if (gesture.direction[0] > 0) {
                             gestureString = "Swipe Right";
@@ -146,6 +150,7 @@ Leap.loop(controllerOptions, function(frame) {
                     } else {
                         if (gesture.direction[1] > 0) {
                             gestureString = "Swipe Up";
+			    //Call function to affect StreetWise.
                             moveLink1();
                         } else {
                             gestureString = "Swipe Down";
@@ -163,7 +168,7 @@ Leap.loop(controllerOptions, function(frame) {
 
 
 /*
- Test funciton
+ Test funciton that adjusts the StreetWise map.
  */
 function moveLink1() {
     processSVGestureData(links[0]);
