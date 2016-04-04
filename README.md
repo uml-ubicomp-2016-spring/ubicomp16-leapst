@@ -1,8 +1,36 @@
+#Project name: LeapStreet
+
+#Members: 
+Michael Forsyth, Nicholas Forsyth, David Rocca, YuetLong Leung  
+
+#By 3/28/16:
+   *Get one gesture linked to map motion.
+   *Make sure that there is one function for the map movement.
+   *Phone Video demo and list of features accomplished
+
+#Done: 3/26/16
+   *Integrated communication from the leap motion to Google Streetwise
+   *Registered the swipe up motion to moving the streetview panorama to the first link
+   *Added a delay between gestures to allow a better response time
+   *Video of current progress recorded by Mike
+
+#By 4/4/2016
+   *Created additional gestures for mapping to panorama links
+   *Gestures: Swipe up-down, counter-clock and clock wise
+   *Added a heading match feature which changes perspective to match motion down a streetview link
+   *To do:correlate swipes to links in relative position, (left swipe goes left)
+
+
+
 # What's done
+
+Progress: 
 
 1. LeapMotion can talk to StreetView
    * Map swipe up to access first link on StreetView and move down.
        * Add a delay in between gestures to allow better response time
+   * Turns 45 degrees using counter-clockwise and clockwise gestures.
+   * Maintains heading when it moves down a link.
 
 # Ideas
 
@@ -18,3 +46,4 @@ Make sure to lock the focus of your gesture down when it has started to a single
 Avoid filtering gestures by z-position; its pretty difficult for users to really know how "deep" their hands are. relative Z-motion is fine, but absolute position is not a great hook.
 Limit gesture starts to well within the detection zone; you don't want them "brushing out" of range mid gesture.
 Detecting when fingers touch each other (pinch) is a bad route, as detecting fingerness of a closed finger loop is problematic at this point. You can detect a pinch, but make sure that you end the gesture while the fingers aren't quite touching.
+
