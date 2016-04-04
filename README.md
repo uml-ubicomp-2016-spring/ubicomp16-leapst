@@ -1,3 +1,5 @@
+TEST WRITE ACCESS
+
 # What's done
 
 1. LeapMotion can talk to StreetView
