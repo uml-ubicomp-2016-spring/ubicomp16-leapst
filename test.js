@@ -6,6 +6,7 @@ function initMap() {
     var olsen = {lat: 42.6547, lng: -71.3261};
     var sv = new google.maps.StreetViewService();
     panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
+    var heading = 0;
 
     // Set up the map.
     map = new google.maps.Map(document.getElementById('map'), {
@@ -33,6 +34,7 @@ function initMap() {
         positionCell.firstChild.nodeValue = panorama.getPosition() + '';
         map.setCenter(panorama.getPosition());
         marker.setPosition(panorama.getPosition());
+
     });
 
     panorama.addListener('links_changed', function() {
@@ -41,11 +43,31 @@ function initMap() {
 
 }
 
+function processRotation(direction) {
+
+    if (direction == true) {
+
+        panorama.setPov({
+            heading: ((panorama.pov.heading - 45) % 360),
+            pitch: 0
+        });
+
+    } else {
+        panorama.setPov({
+            heading: ((panorama.pov.heading + 45) % 360),
+            pitch: 0
+        });
+    }
+     
+}
+
+
 /*Function to adjust the Streetwise data.*/
 function processSVGestureData(linkData) {
     panorama.setPano(linkData.pano);
+
     panorama.setPov({
-        heading: 270,
+        heading: panorama.pov.heading, 
         pitch: 0
     });
     panorama.setVisible(true);
@@ -99,7 +121,7 @@ Leap.loop(controllerOptions, function(frame) {
      Delays the frame input so that the user can respond better.
      */
     if (pauseOnGesture == true) {
-        if (counter == 250) {
+        if (counter == 100) {
             counter = 0;
             pauseOnGesture = false;
         } else {
@@ -132,8 +154,10 @@ Leap.loop(controllerOptions, function(frame) {
                         if (dotProduct  >=  0) {
                             clockwise = true;
                             gestureString = "clockwise circle";
+                            moveClockwise();
                         } else {
                             gestureString = "counterClockwise Circle!";
+                            moveCounterClockwise();
                         }
                     }
                     break;
@@ -154,6 +178,7 @@ Leap.loop(controllerOptions, function(frame) {
                             moveLink1();
                         } else {
                             gestureString = "Swipe Down";
+                            moveLink2();
                         }
                     }
                     break;
@@ -172,4 +197,16 @@ Leap.loop(controllerOptions, function(frame) {
  */
 function moveLink1() {
     processSVGestureData(links[0]);
+}
+
+function moveLink2() {
+    processSVGestureData(links[1]);
+}
+
+function moveClockwise() {
+    processRotation(true);
+}
+
+function moveCounterClockwise() {
+    processRotation(false);
 }
