@@ -67,7 +67,7 @@ function processSVGestureData(linkData) {
     panorama.setPano(linkData.pano);
 
     panorama.setPov({
-        heading: panorama.pov.heading, 
+        heading: linkData.heading, 
         pitch: 0
     });
     panorama.setVisible(true);
@@ -196,6 +196,8 @@ Leap.loop(controllerOptions, function(frame) {
  Test funciton that adjusts the StreetWise map.
  */
 function moveLink1() {
+    console.log(panorama.pov.heading);
+    console.log(links[0].heading);
     processSVGestureData(links[0]);
 }
 
