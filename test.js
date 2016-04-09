@@ -210,10 +210,24 @@ Leap.loop(controllerOptions, function(frame) {
 
 
 /*
- Test funciton that adjusts the StreetWise map.
+ Test function that adjusts the StreetWise map.
  */
 function moveLink(gestureDirection) {
+    var relative_heading;
+    var links_relative_headings[links.length];
 
+    //Store our heading withing 0 to 360.
+    if(panorama.pov.heading < 0){
+      relative_heading = panorama.pov.heading + 360;
+    }
+    else{
+	relative_heading = panorama.pov.heading;
+    }
+
+    //Store link angles relative if our heading was 0 and make sure they are between 0 and 360.
+    for (i = 0; i < links.length; i++) {
+	links_relative_headings[i] = (links[i].heading - relative_heading) % 360;
+    }
 
     if (gestureDirection == "up") {
         var i;
@@ -221,12 +235,40 @@ function moveLink(gestureDirection) {
         for (i = 0; i < links.length; i++) {
             if (links[i].heading < 0) {
                 console.log(links[i].heading + 360);
-            } else {
+            }
+	    else {
                // console.log(links[i].heading + 180);
             }
-            
-        } 
+        }
     }
+/*  if (gestureDirection == "up"){
+      for(i = 0; i < links.length; i++){
+         if ( 0 <= links_relative_headings[i] <= 10 && 350 <= links_relative_headings[i] <= 360 ){
+	   return links[i]; //first link that resides in the direction we are facing (relative north)
+	 }
+    }
+    if (gestureDirection == "down"){
+      for(i = 0; i < links.length; i++){
+         if ( 170 <= links_relative_headings[i] && links_relative_headings[i] <= 190){
+           return links[i]; //first link that resides behind where we are facing (relative south)
+         }
+      }
+    }
+    if (gestureDirection == "left"){
+      for(i = 0; i < links.length; i++){
+         if ( 35 <= links_relative_headings[i] && links_relative_headings[i] <= 55){
+           return links[i]; //first link that resides left to where we are facing (relative west)
+         }
+      }
+    }
+    if (gestureDirection == "right"){
+      for(i = 0; i < links.length; i++){
+         if ( 125 <= links_relative_headings[i] && links_relative_headings[i] <= 145){
+           return links[i]; //first link that resides right to where we are facing (relative east)
+         }
+      }
+    }
+*/
 
 
 }
