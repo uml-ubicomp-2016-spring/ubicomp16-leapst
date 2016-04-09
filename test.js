@@ -1,6 +1,7 @@
 var map;
 var panorama;
 var links;
+var calls;
 
 function initMap() {
     var olsen = {lat: 42.6547, lng: -71.3261};
@@ -41,11 +42,19 @@ function initMap() {
         links = panorama.getLinks();
     });
 
+    panorama.addListener('pov_changed', function() {
+        calls = 0;
+    });
+
 }
 
 function processRotation(direction) {
+    calls =+ 1;
 
-    if (direction == false) {
+
+    if (calls == 1) {
+        console.log(calls);
+        if (direction == false) {
 
         var newHeading = (panorama.pov.heading - 5);
 
@@ -58,12 +67,15 @@ function processRotation(direction) {
             pitch: 0
         });
         console.log(newHeading);
-    } else {
-        panorama.setPov({
-            heading: ((panorama.pov.heading + 5) % 360),
-            pitch: 0
-        });
+        } else {
+            panorama.setPov({
+                heading: ((panorama.pov.heading + 5) % 360),
+                pitch: 0
+            });
+        }
     }
+   
+
      
 }
 
@@ -127,7 +139,7 @@ Leap.loop(controllerOptions, function(frame) {
      Delays the frame input so that the user can respond better.
      */
     if (pauseOnGesture == true) {
-        if (counter == 100) {
+        if (counter == 125) {
             counter = 0;
             pauseOnGesture = false;
         } else {
@@ -181,10 +193,10 @@ Leap.loop(controllerOptions, function(frame) {
                         if (gesture.direction[1] > 0) {
                             gestureString = "Swipe Up";
 			    //Call function to affect StreetWise.
-                            moveLink1();
+                            moveLink("up");
                         } else {
                             gestureString = "Swipe Down";
-                            moveLink2();
+                            moveLink("down");
                         }
                     }
                     break;
@@ -193,7 +205,6 @@ Leap.loop(controllerOptions, function(frame) {
     }
     gestureOutput.innerHTML = gestureString;
     previousFrame = frame;
-
 });
 
 
@@ -201,14 +212,23 @@ Leap.loop(controllerOptions, function(frame) {
 /*
  Test funciton that adjusts the StreetWise map.
  */
-function moveLink1() {
-    //console.log(panorama.pov.heading);
-    //console.log(links[0].heading);
-    processSVGestureData(links[0]);
-}
+function moveLink(gestureDirection) {
 
-function moveLink2() {
-    processSVGestureData(links[1]);
+
+    if (gestureDirection == "up") {
+        var i;
+        console.log(panorama.pov.heading);
+        for (i = 0; i < links.length; i++) {
+            if (links[i].heading < 0) {
+                console.log(links[i].heading + 360);
+            } else {
+               // console.log(links[i].heading + 180);
+            }
+            
+        } 
+    }
+
+
 }
 
 function moveClockwise() {
