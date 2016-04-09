@@ -4,32 +4,32 @@
 Michael Forsyth, Nicholas Forsyth, David Rocca, YuetLong Leung  
 
 #By 3/28/16:
-   *Get one gesture linked to map motion. <br />
-   *Make sure that there is one function for the map movement. <br />
-   *Phone Video demo and list of features accomplished. <br />
+   * Get one gesture linked to map motion. <br />
+   * Make sure that there is one function for the map movement. <br />
+   * Phone Video demo and list of features accomplished. <br />
 
 #Done: 3/26/16
-   *Integrated communication from the leap motion to Google Streetwise <br />
-   *Registered the swipe up motion to moving the streetview panorama to the first link <br />
-   *Added a delay between gestures to allow a better response time <br />
-   *Video of current progress recorded by Mike <br />
+   * Integrated communication from the leap motion to Google Streetwise <br />
+   * Registered the swipe up motion to moving the streetview panorama to the first link <br />
+   * Added a delay between gestures to allow a better response time <br />
+   * Video of current progress recorded by Mike <br />
 
 #By 4/4/2016
-   *Created additional gestures for mapping to panorama links <br />
-   *Gestures: Swipe up-down, counter-clock and clock wise <br />
-   *Added a heading match feature which changes perspective to match motion down a streetview link <br />
-   *To do:correlate swipes to links in relative position, (left swipe goes left) <br />
+   * Created additional gestures for mapping to panorama links <br />
+   * Gestures: Swipe up-down, counter-clock and clock wise <br />
+   * Added a heading match feature which changes perspective to match motion down a streetview link <br />
+   * To do:correlate swipes to links in relative position, (left swipe goes left) <br />
 
 #By 4/11/2016
-   *Create swipe left and swipe right functions to pick links in the correct local direction. <br />
-   *Adjust rotation so that it is more constant. <br />
-   *Potentially add new gestures for slant left and right. <br />
-   *Make ppt and demo for presentation in class. <br />
+   * Create swipe left and swipe right functions to pick links in the correct local direction. <br />
+   * Adjust rotation so that it is more constant. <br />
+   * Potentially add new gestures for slant left and right. <br />
+   * Make ppt and demo for presentation in class. <br />
 
 #Done 4/9/2016
-   *Adjusted roatation so that it is more constant. <br />
-   *Learned that there are negative rotations in streetview and to do math on them it is easier to add 360 degrees if negative. <br />
-   *Learned about tilt in streetview and might use them for tilting. <br /> 
+   * Adjusted roatation so that it is more constant. <br />
+   * Learned that there are negative rotations in streetview and to do math on them it is easier to add 360 degrees if negative. <br />
+   * Learned about tilt in streetview and might use them for tilting. <br /> 
 
 #Progress: 
 
