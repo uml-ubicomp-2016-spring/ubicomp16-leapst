@@ -45,16 +45,22 @@ function initMap() {
 
 function processRotation(direction) {
 
-    if (direction == true) {
+    if (direction == false) {
+
+        var newHeading = (panorama.pov.heading - 5);
+
+        if (newHeading < 0) {
+            newHeading += 360;
+        }
 
         panorama.setPov({
-            heading: ((panorama.pov.heading - 45) % 360),
+            heading: newHeading,
             pitch: 0
         });
-
+        console.log(newHeading);
     } else {
         panorama.setPov({
-            heading: ((panorama.pov.heading + 45) % 360),
+            heading: ((panorama.pov.heading + 5) % 360),
             pitch: 0
         });
     }
@@ -196,8 +202,8 @@ Leap.loop(controllerOptions, function(frame) {
  Test funciton that adjusts the StreetWise map.
  */
 function moveLink1() {
-    console.log(panorama.pov.heading);
-    console.log(links[0].heading);
+    //console.log(panorama.pov.heading);
+    //console.log(links[0].heading);
     processSVGestureData(links[0]);
 }
 
