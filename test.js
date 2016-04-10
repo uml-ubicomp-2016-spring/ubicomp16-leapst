@@ -40,6 +40,11 @@ function initMap() {
 
     panorama.addListener('links_changed', function() {
         links = panorama.getLinks();
+        var i; 
+        //console.log(panorama.pov.heading);
+        for (i = 0; i < links.length; i++) {
+            //console.log(links[i].heading);
+        }
     });
 
     panorama.addListener('pov_changed', function() {
@@ -53,10 +58,9 @@ function processRotation(direction) {
 
 
     if (calls == 1) {
-        console.log(calls);
         if (direction == false) {
 
-        var newHeading = (panorama.pov.heading - 5);
+        var newHeading = (panorama.pov.heading - 20);
 
         if (newHeading < 0) {
             newHeading += 360;
@@ -66,10 +70,10 @@ function processRotation(direction) {
             heading: newHeading,
             pitch: 0
         });
-        console.log(newHeading);
+
         } else {
             panorama.setPov({
-                heading: ((panorama.pov.heading + 5) % 360),
+                heading: ((panorama.pov.heading + 20) % 360),
                 pitch: 0
             });
         }
@@ -217,12 +221,33 @@ function moveLink(gestureDirection) {
 
     if (gestureDirection == "up") {
         var i;
-        console.log(panorama.pov.heading);
+        var tempCurrentHeading;
+
+        if (panorama.pov.heading < 0) {
+            tempCurrentHeading = panorama.pov.heading + 360;
+        } else {
+            tempCurrentHeading = panorama.pov.heading;
+        }
+
+
+        var tempHeading;
+        var upperBound = tempCurrentHeading + 20;
+        var lowerBound = tempCurrentHeading - 20;
+        console.log("panorama.pov.heading: " + panorama.pov.heading);
+        console.log("tempCurrentHeading: " + tempCurrentHeading);
+        console.log("upperBound: " + upperBound);
+        console.log("lowerBound: " + lowerBound);
         for (i = 0; i < links.length; i++) {
             if (links[i].heading < 0) {
-                console.log(links[i].heading + 360);
+                tempHeading = links[i].heading + 360;
+
+                if (tempHeading >= lowerBound && tempHeading <= upperBound) {
+                    processSVGestureData(links[i]);
+                    break;
+                }
+
             } else {
-               // console.log(links[i].heading + 180);
+                //console.log(links[i].heading + 180);
             }
             
         } 
