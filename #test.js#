@@ -103,7 +103,6 @@ function processSVData(data, status) {
             map: map,
             title: data.location.description
         });
-	marker.setMap(null);
 
         panorama.setPano(data.location.pano);
         panorama.setPov({
