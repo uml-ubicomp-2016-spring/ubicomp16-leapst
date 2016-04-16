@@ -20,6 +20,7 @@ function initMap() {
     sv.getPanorama({location: olsen, radius: 50}, processSVData);
 
     var myLatLng = new google.maps.LatLng(37.88,-122.24);
+
     var marker = new google.maps.Marker({position: myLatLng, map: map});
     marker.setMap(map);
 
