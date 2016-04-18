@@ -6,8 +6,9 @@ var calls;
 function initMap() {
     var olsen = {lat: 42.6547, lng: -71.3261};
     var sv = new google.maps.StreetViewService();
+
     panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
-    var heading = 0;
+    //var heading = 0;
 
     // Set up the map.
     map = new google.maps.Map(document.getElementById('map'), {
@@ -51,17 +52,14 @@ function initMap() {
     panorama.addListener('pov_changed', function() {
         calls = 0;
     });
-
 }
 
-function processRotation(direction) {
+function processRotation(direction, magnitude) {
     calls =+ 1;
-
-
     if (calls == 1) {
         if (direction == false) {
 
-        var newHeading = (panorama.pov.heading - 20);
+        var newHeading = (panorama.pov.heading - magnitude);
 
         if (newHeading < 0) {
             newHeading += 360;
@@ -74,14 +72,11 @@ function processRotation(direction) {
 
         } else {
             panorama.setPov({
-                heading: ((panorama.pov.heading + 20) % 360),
+                heading: ((panorama.pov.heading + magnitude) % 360),
                 pitch: 0
             });
         }
     }
-   
-
-     
 }
 
 
@@ -135,10 +130,13 @@ var previousFrame = null;
 var pauseOnGesture = false;
 var counter = 0;
 
-var controllerOptions = {enableGestures: true};
+/* Variables migrate from leap-map */
+var leftHandPrev;
+var LEFT_HAND = 0, RIGHT_HAND = 1;
+var X = 0, Y = 1, Z = 2;
 
 /*Continuously update frame.*/
-Leap.loop(controllerOptions, function(frame) {
+Leap.loop({enableGestures: true}, function(frame) {
 
     /*
      A simple frame blocking mechanism for testing. 
@@ -152,7 +150,6 @@ Leap.loop(controllerOptions, function(frame) {
             counter++;
             return;
         }
-
     }
 
     var gestureOutput = document.getElementById("gestureData");
@@ -210,6 +207,41 @@ Leap.loop(controllerOptions, function(frame) {
         }
     }
 
+    // the grabbing controller migrated from leap-map
+    if(frame.hands.length > 0 && isGripped(frame.hands[LEFT_HAND])) {
+        var leftHand = frame.hands[LEFT_HAND];
+
+        // If there was no previous closed position, capture it and exit
+        if(leftHandPrev == null) {
+            leftHandPrev = leftHand;
+            return;
+        }
+
+        // Calculate how much the hand moved
+        var dX = leftHandPrev.stabilizedPalmPosition[X] - leftHand.stabilizedPalmPosition[X];
+        var dY = leftHandPrev.stabilizedPalmPosition[Y] - leftHand.stabilizedPalmPosition[Y];
+
+        /* we should call a function to change the panorama here */
+        if (dX >= 0){
+            moveClockwise(dX);
+        } else {
+            moveCounterClockwise(dX);
+        }
+
+        leftHandPrev = leftHand;
+
+    } else {
+        // If the left hand is not in a grab position, clear the last hand position
+        if (frame.hands.length > LEFT_HAND && !isGripped(frame.hands[LEFT_HAND]) && leftHandPrev != null) {
+            leftHandPrev = null;
+        }
+
+        // if the right hand is not in a grab position, clear the separation
+        if (frame.hands.length > RIGHT_HAND && !isGripped(frame.hands[RIGHT_HAND]) && separationStart != null) {
+            separationStart = null;
+        }
+        //console.log("Clearing lastHand");
+    }
     //Check for tilting hand here.
     if(frame.hands.length > 0){
 	console.log("Found a hand on the leap.");
@@ -310,14 +342,18 @@ function moveLink(gestureDirection) {
             
         } 
     }
-
-
 }
 
-function moveClockwise() {
-    processRotation(true);
+function moveClockwise(magnitude) {
+    console.log("clockwise : " + magnitude);
+    processRotation(true, magnitude);
 }
 
-function moveCounterClockwise() {
-    processRotation(false);
+function moveCounterClockwise(magnitude) {
+    console.log("counter-clockwise : " + magnitude);
+    processRotation(false, 0 - magnitude);
+}
+
+function isGripped(hand) {
+    return hand.grabStrength == 1.0;
 }
