@@ -31,6 +31,11 @@ Michael Forsyth, Nicholas Forsyth, David Rocca, YuetLong Leung
    * Learned that there are negative rotations in streetview and to do math on them it is easier to add 360 degrees if negative. <br />
    * Learned about tilt in streetview and might use them for tilting. <br /> 
 
+#Done 4/16/2016
+   * Fix the map so no red markers retain after panorama adjusts position
+   * Added tilting gesture for both hands
+   * Added grab and drag gesture for left hand
+   
 #Progress: 
 
 LeapMotion can talk to StreetView <br /> 
