@@ -21,6 +21,7 @@ function initMap() {
     sv.getPanorama({location: olsen, radius: 50}, processSVData);
 
     var myLatLng = new google.maps.LatLng(37.88,-122.24);
+
     var marker = new google.maps.Marker({position: myLatLng, map: map});
     marker.setMap(map);
 
@@ -98,6 +99,7 @@ function processSVData(data, status) {
             map: map,
             title: data.location.description
         });
+	marker.setMap(null);
 
         panorama.setPano(data.location.pano);
         panorama.setPov({
@@ -230,15 +232,69 @@ Leap.loop({enableGestures: true}, function(frame) {
 
     } else {
         // If the left hand is not in a grab position, clear the last hand position
-        if(frame.hands.length > LEFT_HAND && !isGripped(frame.hands[LEFT_HAND]) && leftHandPrev != null) {
+        if (frame.hands.length > LEFT_HAND && !isGripped(frame.hands[LEFT_HAND]) && leftHandPrev != null) {
             leftHandPrev = null;
         }
 
         // if the right hand is not in a grab position, clear the separation
-        if(frame.hands.length > RIGHT_HAND && !isGripped(frame.hands[RIGHT_HAND]) && separationStart != null) {
+        if (frame.hands.length > RIGHT_HAND && !isGripped(frame.hands[RIGHT_HAND]) && separationStart != null) {
             separationStart = null;
         }
         //console.log("Clearing lastHand");
+    }
+    //Check for tilting hand here.
+    if(frame.hands.length > 0){
+	console.log("Found a hand on the leap.");
+	var farLeft;
+	var farRight;
+	
+	if(frame.hands[0].type == "left"){
+	    farLeft = frame.hands[0].pinky;
+	    farRight = frame.hands[0].thumb;
+	}
+	if(frame.hands[0].type == "right"){
+	    farRight = frame.hands[0].pinky;
+	    farLeft = frame.hands[0].thumb;
+	}
+	
+	var leftPosY = farLeft.stabilizedTipPosition;
+	var leftY = leftPosY[1];
+	
+	var rightPosY = farRight.stabilizedTipPosition;
+	var rightY = rightPosY[1];   
+	
+	console.log(leftY);
+	console.log(rightY);
+
+	var fingerDist = leftY - rightY;
+
+	console.log("Distance between thumb and pinky.");
+	console.log(fingerDist);
+
+	var pov = panorama.getPov();
+	if(fingerDist == 0){
+	    console.log("Hand is level.");
+	    console.log(fingerDist);
+	}
+	else if(fingerDist > 50){
+	    console.log("Hand is leaning right.");
+	    console.log(fingerDist); 
+	    pov.heading += 0.5;
+	    panorama.setPov({
+		heading: pov.heading,
+		pitch: pov.pitch
+	    });
+	}
+	else if(fingerDist < -50){
+	    console.log("Hand is leaning left.");
+	    console.log(fingerDist); 
+	    pov.heading -= 0.5;
+	    panorama.setPov({
+		heading: pov.heading,
+		pitch: pov.pitch
+	    });
+
+	}
     }
 
     gestureOutput.innerHTML = gestureString;
