@@ -170,6 +170,9 @@ var counter = 0;
 var leftHandPrev;
 var LEFT_HAND = 0, RIGHT_HAND = 1;
 var X = 0, Y = 1, Z = 2;
+var stabilizedPalmPositionAtGripForZ = null;
+var tid = -1;
+var panoIsMoving = false;
 
 /*Continuously update frame.*/
 Leap.loop({enableGestures: true}, function(frame) {
@@ -252,6 +255,7 @@ Leap.loop({enableGestures: true}, function(frame) {
         // If there was no previous closed position, capture it and exit
         if(leftHandPrev == null) {
             leftHandPrev = leftHand;
+            stabilizedPalmPositionAtGripForZ = leftHand.stabilizedPalmPosition[Z];
             return;
         }
 
@@ -259,14 +263,26 @@ Leap.loop({enableGestures: true}, function(frame) {
         var dX = leftHandPrev.stabilizedPalmPosition[X] - leftHand.stabilizedPalmPosition[X];
         var dY = leftHandPrev.stabilizedPalmPosition[Y] - leftHand.stabilizedPalmPosition[Y];
 
+        var zOffsetFromAtGrip = stabilizedPalmPositionAtGripForZ - leftHand.stabilizedPalmPosition[Z];
+
         /* we should call a function to change the panorama here */
         if (dX >= 0){
             moveClockwise(dX);
         } else if (dX < 0) {
             moveCounterClockwise(dX);
         }
-        console.log(dY);
+        
         processPitch(dY);
+
+        console.log(zOffsetFromAtGrip);
+        if (zOffsetFromAtGrip >= 20 && panoIsMoving == false){
+            tid = setInterval(moveLink("up"), 1000);
+            panoIsMoving = true;
+        } else {
+            clearInterval(tid);
+            panoIsMoving = false;
+            tid = -1;
+        }
 
         leftHandPrev = leftHand;
 
@@ -274,16 +290,22 @@ Leap.loop({enableGestures: true}, function(frame) {
         // If the left hand is not in a grab position, clear the last hand position
         if (frame.hands.length > LEFT_HAND && !isGripped(frame.hands[LEFT_HAND]) && leftHandPrev != null) {
             leftHandPrev = null;
+            stabilizedPalmPositionAtGripForZ = null;
+            clearInterval(tid);
+            // this clears the grip position [Z]
+            panoIsMoving = false;
+
+
         }
 
         // if the right hand is not in a grab position, clear the separation
         if (frame.hands.length > RIGHT_HAND && !isGripped(frame.hands[RIGHT_HAND]) && separationStart != null) {
             separationStart = null;
+            // this does literally nothing because we are not doing right hand at all
         }
-        //console.log("Clearing lastHand");
     }
 
-
+ /*
     //Check for tilting hand here.
     if(frame.hands.length > 0){
 	console.log("Found a hand on the leap.");
@@ -308,16 +330,16 @@ Leap.loop({enableGestures: true}, function(frame) {
 	var fingerDist = leftY - rightY;
 
 	console.log("Distance between thumb and pinky.");
-	console.log(fingerDist);
+	//console.log(fingerDist);
 
 	var pov = panorama.getPov();
 	if(fingerDist == 0){
 	    console.log("Hand is level.");
-	    console.log(fingerDist);
+	    //console.log(fingerDist);
 	}
 	else if(fingerDist > 50){
 	    console.log("Hand is leaning right.");
-	    console.log(fingerDist); 
+	    //console.log(fingerDist);
 	    pov.heading += 0.5;
 	    panorama.setPov({
 		heading: pov.heading,
@@ -326,7 +348,7 @@ Leap.loop({enableGestures: true}, function(frame) {
 	}
 	else if(fingerDist < -50){
 	    console.log("Hand is leaning left.");
-	    console.log(fingerDist); 
+	    //console.log(fingerDist);
 	    pov.heading -= 0.5;
 	    panorama.setPov({
 		heading: pov.heading,
@@ -335,7 +357,7 @@ Leap.loop({enableGestures: true}, function(frame) {
 
 	}
     }
-
+*/
     gestureOutput.innerHTML = gestureString;
     previousFrame = frame;
 });
@@ -441,7 +463,6 @@ function moveLink(gestureDirection) {
             } else {
                 //console.log(links[i].heading + 180);
             }
-            
         } 
     }*/
 }
