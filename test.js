@@ -67,16 +67,28 @@ function processRotation(direction, magnitude) {
 
         panorama.setPov({
             heading: newHeading,
-            pitch: 0
+            pitch: panorama.pov.pitch
         });
 
         } else {
             panorama.setPov({
                 heading: ((panorama.pov.heading + magnitude) % 360),
-                pitch: 0
+                pitch: panorama.pov.pitch
             });
         }
     }
+}
+
+function processPitch(magnitude) {
+    var newPitch = panorama.pov.pitch + magnitude;
+    if (newPitch < -90 || newPitch > 90){
+        return;
+    }
+
+    panorama.setPov({
+        heading: panorama.pov.heading,
+        pitch: newPitch
+    })
 }
 
 
@@ -99,15 +111,16 @@ function processSVData(data, status) {
             map: map,
             title: data.location.description
         });
-	marker.setMap(null);
+
+	    marker.setMap(null);
 
         panorama.setPano(data.location.pano);
         panorama.setPov({
             heading: 270,
             pitch: 0
         });
-        panorama.setVisible(true);
 
+        panorama.setVisible(true);
 
         marker.addListener('click', function() {
             var markerPanoID = data.location.pano;
@@ -142,6 +155,7 @@ Leap.loop({enableGestures: true}, function(frame) {
      A simple frame blocking mechanism for testing. 
      Delays the frame input so that the user can respond better.
      */
+
     if (pauseOnGesture == true) {
         if (counter == 125) {
             counter = 0;
@@ -153,7 +167,6 @@ Leap.loop({enableGestures: true}, function(frame) {
     }
 
     var gestureOutput = document.getElementById("gestureData");
-
     var gestureString;
     
     //Check that a gesture has been read and is valid.
@@ -224,9 +237,11 @@ Leap.loop({enableGestures: true}, function(frame) {
         /* we should call a function to change the panorama here */
         if (dX >= 0){
             moveClockwise(dX);
-        } else {
+        } else if (dX < 0) {
             moveCounterClockwise(dX);
         }
+        console.log(dY);
+        processPitch(dY);
 
         leftHandPrev = leftHand;
 
@@ -242,6 +257,8 @@ Leap.loop({enableGestures: true}, function(frame) {
         }
         //console.log("Clearing lastHand");
     }
+
+
     //Check for tilting hand here.
     if(frame.hands.length > 0){
 	console.log("Found a hand on the leap.");
@@ -261,10 +278,7 @@ Leap.loop({enableGestures: true}, function(frame) {
 	var leftY = leftPosY[1];
 	
 	var rightPosY = farRight.stabilizedTipPosition;
-	var rightY = rightPosY[1];   
-	
-	console.log(leftY);
-	console.log(rightY);
+	var rightY = rightPosY[1];
 
 	var fingerDist = leftY - rightY;
 
@@ -346,11 +360,17 @@ function moveLink(gestureDirection) {
 
 function moveClockwise(magnitude) {
     console.log("clockwise : " + magnitude);
+    if (isNaN(magnitude)){
+        return;
+    }
     processRotation(true, magnitude);
 }
 
 function moveCounterClockwise(magnitude) {
     console.log("counter-clockwise : " + magnitude);
+    if (isNaN(magnitude)){
+        return;
+    }
     processRotation(false, 0 - magnitude);
 }
 
