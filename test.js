@@ -214,10 +214,10 @@ Leap.loop({enableGestures: true}, function(frame) {
                         if (dotProduct  >=  0) {
                             clockwise = true;
                             gestureString = "clockwise circle";
-                            moveClockwise(10);
+                            //moveClockwise(10);
                         } else {
                             gestureString = "counterClockwise Circle!";
-                            moveCounterClockwise(10);
+                            //moveCounterClockwise(10);
                         }
                     }
                     break;
@@ -311,7 +311,7 @@ Leap.loop({enableGestures: true}, function(frame) {
 	console.log("Found a hand on the leap.");
 	var farLeft;
 	var farRight;
-	
+	var middleFing;
 	if(frame.hands[0].type == "left"){
 	    farLeft = frame.hands[0].pinky;
 	    farRight = frame.hands[0].thumb;
@@ -320,20 +320,41 @@ Leap.loop({enableGestures: true}, function(frame) {
 	    farRight = frame.hands[0].pinky;
 	    farLeft = frame.hands[0].thumb;
 	}
-	
+	if(frame.hands[0].fingers.length >= 3){
+	    middleFing = frame.hands[0].fingers[2];
+	}
 	var leftPosY = farLeft.stabilizedTipPosition;
 	var leftY = leftPosY[1];
 	
 	var rightPosY = farRight.stabilizedTipPosition;
 	var rightY = rightPosY[1];
 
+	var middlePosY = middleFing.stabilizedTipPosition;
+	console.log("MiddleFinger y pos");
+	console.log(middlePosY[1]);
+
+	var midY = middlePosY[1];
+
 	var fingerDist = leftY - rightY;
+
+	var tiltUpDist;
+
+	if(frame.hands[0].type == "left"){
+	    tiltUpDist = midY - rightY;
+	}
+	if(frame.hands[0].type == "right"){
+	    tiltUpDist = midY - leftY;
+	}
 
 	console.log("Distance between thumb and pinky.");
 	//console.log(fingerDist);
 
+	console.log("Distance between thumb and middle finger.");
+	console.log(tiltUpDist);
+
+
 	var pov = panorama.getPov();
-	if(fingerDist == 0){
+	if(fingerDist == 0 || tiltUpDist == 0){
 	    console.log("Hand is level.");
 	    //console.log(fingerDist);
 	}
@@ -356,6 +377,23 @@ Leap.loop({enableGestures: true}, function(frame) {
 	    });
 
 	}
+	else if(tiltUpDist > 50){
+	    console.log("Hand is leaning up.");
+	    console.log(tiltUpDist); 
+	    pov.pitch += 0.5;
+	    panorama.setPov({
+		heading: pov.heading,
+		pitch: pov.pitch
+	    });	    
+	}
+	else if(tiltUpDist < -50){
+	    console.log("Hand is leaning down.");
+	    console.log(tiltUpDist); 
+	    pov.pitch -= 0.5;
+	    panorama.setPov({
+		heading: pov.heading,
+		pitch: pov.pitch
+	    });}
     }
 */
     gestureOutput.innerHTML = gestureString;
