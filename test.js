@@ -8,7 +8,7 @@ function initMap() {
     var sv = new google.maps.StreetViewService();
 
     panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
-    //var heading = 0;
+    var heading = 0;
 
     // Set up the map.
     map = new google.maps.Map(document.getElementById('map'), {
@@ -21,7 +21,6 @@ function initMap() {
     sv.getPanorama({location: olsen, radius: 50}, processSVData);
 
     var myLatLng = new google.maps.LatLng(37.88,-122.24);
-
     var marker = new google.maps.Marker({position: myLatLng, map: map});
     marker.setMap(map);
 
@@ -137,6 +136,30 @@ function processSVData(data, status) {
     }
 }
 
+//http://stackoverflow.com/questions/5597060/detecting-arrow-key-presses-in-javascript
+document.onkeydown = function(e) {
+    switch (e.keyCode) {
+        case 65:
+            moveLink("left");
+            console.log("detect a");
+            break;
+        case 87:
+            moveLink("up");
+            console.log("detect w");
+            break;
+        case 68:
+            moveLink("right");
+            console.log("detect d");
+            break;
+        case 83:
+            moveLink("down");
+            console.log("detect s");
+            break;
+    }
+};
+
+
+
 
 /*Main street view code.*/
 var previousFrame = null;
@@ -188,10 +211,10 @@ Leap.loop({enableGestures: true}, function(frame) {
                         if (dotProduct  >=  0) {
                             clockwise = true;
                             gestureString = "clockwise circle";
-                            moveClockwise();
+                            moveClockwise(10);
                         } else {
                             gestureString = "counterClockwise Circle!";
-                            moveCounterClockwise();
+                            moveCounterClockwise(10);
                         }
                     }
                     break;
@@ -202,8 +225,10 @@ Leap.loop({enableGestures: true}, function(frame) {
                     if (isHorizontal) {
                         if (gesture.direction[0] > 0) {
                             gestureString = "Swipe Right";
+			    moveLink("right");
                         } else {
                             gestureString = "Swipe Left";
+			    moveLink("left");
                         }
                     } else {
                         if (gesture.direction[1] > 0) {
@@ -322,7 +347,70 @@ Leap.loop({enableGestures: true}, function(frame) {
  */
 function moveLink(gestureDirection) {
 
+ var relative_heading;
+    var links_relative_headings = [links.length];
+    var i;
 
+    //Store our heading withing 0 to 360.
+    if(panorama.pov.heading < 0){
+      relative_heading = panorama.pov.heading + 360;
+    }
+    else{
+        relative_heading = panorama.pov.heading;
+    }
+
+    //Store link angles relative if our heading was 0 and make sure they are between 0 and 360.
+    for (i = 0; i < links.length; i++) {
+        links_relative_headings[i] = (links[i].heading - relative_heading);
+        while(links_relative_headings[i] < 0){
+            links_relative_headings[i] = links_relative_headings[i] + 360;
+        }
+        console.log(links_relative_headings[i] % 360);
+    }
+
+    if (gestureDirection == "up"){
+        for(i = 0; i < links.length; i++){
+            if ( (0 <= links_relative_headings[i] && links_relative_headings[i] <= 45) ||
+                 (315 < links_relative_headings[i] && links_relative_headings[i] <= 360 )){
+                console.log("Go north");
+                processSVGestureData(links[i]);
+                break;
+                //first link that resides in the direction we are facing (relative north)
+            }
+        }
+    }
+    if (gestureDirection == "down"){
+        for(i = 0; i < links.length; i++){
+            if ( 135 < links_relative_headings[i] && links_relative_headings[i] <= 225){
+                console.log("Go south");
+                processSVGestureData(links[i]);
+                break;
+                //first link that resides behind where we are facing (relative south)
+            }
+        }
+    }
+    if (gestureDirection == "right"){
+        for(i = 0; i < links.length; i++){
+            if ( 45 < links_relative_headings[i] && links_relative_headings[i] <= 135){
+                console.log("Go west");
+                processSVGestureData(links[i]);
+                break;
+                //first link that resides left to where we are facing (relative west)
+            }
+        }
+    }
+    if (gestureDirection == "left"){
+        for(i = 0; i < links.length; i++){
+            if ( 225 < links_relative_headings[i] && links_relative_headings[i] <= 315){
+                console.log("Go east");
+                processSVGestureData(links[i]);
+                break;
+                //first link that resides right to where we are facing (relative east)
+            }
+        }
+    }
+
+/*
     if (gestureDirection == "up") {
         var i;
         var tempCurrentHeading;
@@ -355,7 +443,7 @@ function moveLink(gestureDirection) {
             }
             
         } 
-    }
+    }*/
 }
 
 function moveClockwise(magnitude) {
