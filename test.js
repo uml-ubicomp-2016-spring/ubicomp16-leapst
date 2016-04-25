@@ -8,7 +8,7 @@ function initMap() {
     var sv = new google.maps.StreetViewService();
 
     panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
-    var heading = 0;
+    //var heading = 0;
 
     // Set up the map.
     map = new google.maps.Map(document.getElementById('map'), {
@@ -58,13 +58,13 @@ function processRotation(direction, magnitude) {
 	    
 	    //Adjust heading to be positive.
             if (newHeading < 0) {
-		newHeading += 360;
+		        newHeading += 360;
             }
 
 	    //Readjust Pov heading.
             panorama.setPov({
-		heading: newHeading,
-		pitch: panorama.pov.pitch
+		        heading: newHeading,
+		        pitch: panorama.pov.pitch
             });
 	    
         } else {
@@ -142,25 +142,18 @@ document.onkeydown = function(e) {
     switch (e.keyCode) {
         case 65:
             moveLink("left");
-            console.log("detect a");
             break;
         case 87:
             moveLink("up");
-            console.log("detect w");
             break;
         case 68:
             moveLink("right");
-            console.log("detect d");
             break;
         case 83:
             moveLink("down");
-            console.log("detect s");
             break;
     }
 };
-
-
-
 
 /*Main street view code.*/
 var previousFrame = null;
@@ -276,14 +269,14 @@ Leap.loop({enableGestures: true}, function(frame) {
         
         processPitch(dY);
 
-        console.log(zOffsetFromAtGrip);
         if (zOffsetFromAtGrip >= 20 && panoIsMoving == false){
-            tid = setInterval(moveLink("up"), 1000);
+            tid = setInterval(function() { moveLink("up"); }, 500);
             panoIsMoving = true;
-        } else {
+        }
+
+        if (zOffsetFromAtGrip < 20){
             clearInterval(tid);
             panoIsMoving = false;
-            tid = -1;
         }
 
         leftHandPrev = leftHand;
@@ -294,7 +287,6 @@ Leap.loop({enableGestures: true}, function(frame) {
             leftHandPrev = null;
             stabilizedPalmPositionAtGripForZ = null;
             clearInterval(tid);
-            // this clears the grip position [Z]
             panoIsMoving = false;
 
 
@@ -306,11 +298,9 @@ Leap.loop({enableGestures: true}, function(frame) {
             // this does literally nothing because we are not doing right hand at all
         }
     }
-
- /*
+    
     //Check for tilting hand here.
     if(frame.hands.length > 0){
-	console.log("Found a hand on the leap.");
 	var farLeft;
 	var farRight;
 	var middleFing;
@@ -397,7 +387,7 @@ Leap.loop({enableGestures: true}, function(frame) {
 		pitch: pov.pitch
 	    });}
     }
-*/
+
     gestureOutput.innerHTML = gestureString;
     previousFrame = frame;
 });
@@ -427,7 +417,6 @@ function moveLink(gestureDirection) {
         while(links_relative_headings[i] < 0){
             links_relative_headings[i] = links_relative_headings[i] + 360;
         }
-        console.log(links_relative_headings[i] % 360);
     }
     
     /*Recognize and act according* to the direction of movement.*/
@@ -435,7 +424,7 @@ function moveLink(gestureDirection) {
         for(i = 0; i < links.length; i++){
             if ( (0 <= links_relative_headings[i] && links_relative_headings[i] <= 45) ||
                  (315 < links_relative_headings[i] && links_relative_headings[i] <= 360 )){
-                console.log("Go north");
+                //console.log("Go north");
                 processSVGestureData(links[i]);
                 break;
                 //first link that resides in the direction we are facing (relative north)
@@ -445,7 +434,7 @@ function moveLink(gestureDirection) {
     if (gestureDirection == "down"){
         for(i = 0; i < links.length; i++){
             if ( 135 < links_relative_headings[i] && links_relative_headings[i] <= 225){
-                console.log("Go south");
+                //console.log("Go south");
                 processSVGestureData(links[i]);
                 break;
                 //first link that resides behind where we are facing (relative south)
@@ -455,7 +444,7 @@ function moveLink(gestureDirection) {
     if (gestureDirection == "right"){
         for(i = 0; i < links.length; i++){
             if ( 45 < links_relative_headings[i] && links_relative_headings[i] <= 135){
-                console.log("Go west");
+                //console.log("Go west");
                 processSVGestureData(links[i]);
                 break;
                 //first link that resides left to where we are facing (relative west)
@@ -476,7 +465,6 @@ function moveLink(gestureDirection) {
 
 /*Handles clockwise movement based on a given magnitude.*/
 function moveClockwise(magnitude) {
-    console.log("clockwise : " + magnitude);
     if (isNaN(magnitude)){
         return;
     }
@@ -485,7 +473,6 @@ function moveClockwise(magnitude) {
 
 /*Handles counter-clockwise movement based on a given magnitude.*/
 function moveCounterClockwise(magnitude) {
-    console.log("counter-clockwise : " + magnitude);
     if (isNaN(magnitude)){
         return;
     }
@@ -496,3 +483,5 @@ function moveCounterClockwise(magnitude) {
 function isGripped(hand) {
     return hand.grabStrength == 1.0;
 }
+
+initMap();
