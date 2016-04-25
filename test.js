@@ -41,11 +41,6 @@ function initMap() {
 
     panorama.addListener('links_changed', function() {
         links = panorama.getLinks();
-        var i; 
-        //console.log(panorama.pov.heading);
-        for (i = 0; i < links.length; i++) {
-            //console.log(links[i].heading);
-        }
     });
 
     panorama.addListener('pov_changed', function() {
@@ -53,22 +48,25 @@ function initMap() {
     });
 }
 
+/*Function to change the rotation of the panorama*/
 function processRotation(direction, magnitude) {
     calls =+ 1;
     if (calls == 1) {
         if (direction == false) {
 
-        var newHeading = (panorama.pov.heading - magnitude);
+            var newHeading = (panorama.pov.heading - magnitude);
+	    
+	    //Adjust heading to be positive.
+            if (newHeading < 0) {
+		newHeading += 360;
+            }
 
-        if (newHeading < 0) {
-            newHeading += 360;
-        }
-
-        panorama.setPov({
-            heading: newHeading,
-            pitch: panorama.pov.pitch
-        });
-
+	    //Readjust Pov heading.
+            panorama.setPov({
+		heading: newHeading,
+		pitch: panorama.pov.pitch
+            });
+	    
         } else {
             panorama.setPov({
                 heading: ((panorama.pov.heading + magnitude) % 360),
@@ -78,6 +76,7 @@ function processRotation(direction, magnitude) {
     }
 }
 
+/*Adjust the pitch of the panorama.*/
 function processPitch(magnitude) {
     var newPitch = panorama.pov.pitch + magnitude;
     if (newPitch < -90 || newPitch > 90){
@@ -102,7 +101,7 @@ function processSVGestureData(linkData) {
     panorama.setVisible(true);
 }
 
-
+/*This function handles all streetview calls.*/
 function processSVData(data, status) {
     if (status === google.maps.StreetViewStatus.OK) {
         var marker = new google.maps.Marker({
@@ -136,6 +135,8 @@ function processSVData(data, status) {
     }
 }
 
+/*Short code to allow the use of w, a, s, and d to traverse the links on the panorama.*/
+//Original code here.
 //http://stackoverflow.com/questions/5597060/detecting-arrow-key-presses-in-javascript
 document.onkeydown = function(e) {
     switch (e.keyCode) {
@@ -221,6 +222,7 @@ Leap.loop({enableGestures: true}, function(frame) {
                         }
                     }
                     break;
+		//Determines the direction the user is swiping in.
                 case "swipe":
                     var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
 		
@@ -330,8 +332,8 @@ Leap.loop({enableGestures: true}, function(frame) {
 	var rightY = rightPosY[1];
 
 	var middlePosY = middleFing.stabilizedTipPosition;
-	console.log("MiddleFinger y pos");
-	console.log(middlePosY[1]);
+	//	console.log("MiddleFinger y pos");
+	//	console.log(middlePosY[1]);
 
 	var midY = middlePosY[1];
 
@@ -346,20 +348,20 @@ Leap.loop({enableGestures: true}, function(frame) {
 	    tiltUpDist = midY - leftY;
 	}
 
-	console.log("Distance between thumb and pinky.");
+	//	console.log("Distance between thumb and pinky.");
 	//console.log(fingerDist);
 
-	console.log("Distance between thumb and middle finger.");
-	console.log(tiltUpDist);
+	//	console.log("Distance between thumb and middle finger.");
+	//	console.log(tiltUpDist);
 
 
 	var pov = panorama.getPov();
 	if(fingerDist == 0 || tiltUpDist == 0){
-	    console.log("Hand is level.");
+	//	    console.log("Hand is level.");
 	    //console.log(fingerDist);
 	}
 	else if(fingerDist > 50){
-	    console.log("Hand is leaning right.");
+	//	    console.log("Hand is leaning right.");
 	    //console.log(fingerDist);
 	    pov.heading += 0.5;
 	    panorama.setPov({
@@ -368,7 +370,7 @@ Leap.loop({enableGestures: true}, function(frame) {
 	    });
 	}
 	else if(fingerDist < -50){
-	    console.log("Hand is leaning left.");
+	//	    console.log("Hand is leaning left.");
 	    //console.log(fingerDist);
 	    pov.heading -= 0.5;
 	    panorama.setPov({
@@ -378,8 +380,8 @@ Leap.loop({enableGestures: true}, function(frame) {
 
 	}
 	else if(tiltUpDist > 50){
-	    console.log("Hand is leaning up.");
-	    console.log(tiltUpDist); 
+	    //console.log("Hand is leaning up.");
+	    //console.log(tiltUpDist); 
 	    pov.pitch += 0.5;
 	    panorama.setPov({
 		heading: pov.heading,
@@ -387,8 +389,8 @@ Leap.loop({enableGestures: true}, function(frame) {
 	    });	    
 	}
 	else if(tiltUpDist < -50){
-	    console.log("Hand is leaning down.");
-	    console.log(tiltUpDist); 
+	    //console.log("Hand is leaning down.");
+	    //console.log(tiltUpDist); 
 	    pov.pitch -= 0.5;
 	    panorama.setPov({
 		heading: pov.heading,
@@ -427,7 +429,8 @@ function moveLink(gestureDirection) {
         }
         console.log(links_relative_headings[i] % 360);
     }
-
+    
+    /*Recognize and act according* to the direction of movement.*/
     if (gestureDirection == "up"){
         for(i = 0; i < links.length; i++){
             if ( (0 <= links_relative_headings[i] && links_relative_headings[i] <= 45) ||
@@ -469,42 +472,9 @@ function moveLink(gestureDirection) {
             }
         }
     }
-
-/*
-    if (gestureDirection == "up") {
-        var i;
-        var tempCurrentHeading;
-
-        if (panorama.pov.heading < 0) {
-            tempCurrentHeading = panorama.pov.heading + 360;
-        } else {
-            tempCurrentHeading = panorama.pov.heading;
-        }
-
-
-        var tempHeading;
-        var upperBound = tempCurrentHeading + 20;
-        var lowerBound = tempCurrentHeading - 20;
-        console.log("panorama.pov.heading: " + panorama.pov.heading);
-        console.log("tempCurrentHeading: " + tempCurrentHeading);
-        console.log("upperBound: " + upperBound);
-        console.log("lowerBound: " + lowerBound);
-        for (i = 0; i < links.length; i++) {
-            if (links[i].heading < 0) {
-                tempHeading = links[i].heading + 360;
-
-                if (tempHeading >= lowerBound && tempHeading <= upperBound) {
-                    processSVGestureData(links[i]);
-                    break;
-                }
-
-            } else {
-                //console.log(links[i].heading + 180);
-            }
-        } 
-    }*/
 }
 
+/*Handles clockwise movement based on a given magnitude.*/
 function moveClockwise(magnitude) {
     console.log("clockwise : " + magnitude);
     if (isNaN(magnitude)){
@@ -513,6 +483,7 @@ function moveClockwise(magnitude) {
     processRotation(true, magnitude);
 }
 
+/*Handles counter-clockwise movement based on a given magnitude.*/
 function moveCounterClockwise(magnitude) {
     console.log("counter-clockwise : " + magnitude);
     if (isNaN(magnitude)){
@@ -521,6 +492,7 @@ function moveCounterClockwise(magnitude) {
     processRotation(false, 0 - magnitude);
 }
 
+/*Returns if a hand is gripping.*/
 function isGripped(hand) {
     return hand.grabStrength == 1.0;
 }

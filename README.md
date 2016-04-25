@@ -32,9 +32,16 @@ Michael Forsyth, Nicholas Forsyth, David Rocca, YuetLong Leung
    * Learned about tilt in streetview and might use them for tilting. <br /> 
 
 #Done 4/16/2016
-   * Fix the map so no red markers retain after panorama adjusts position
-   * Added tilting gesture for both hands
-   * Added grab and drag gesture for left hand
+   * Fix the map so no red markers retain after panorama adjusts position. <br />
+   * Added tilting gesture for both hands. <br />
+   * Added grab and drag gesture for left hand. <br />
+
+#Done 4/23/2016
+   * Edited grab motion so that you can move forward through links and pull back to stop. <br />
+   * Created tilt up and tilt down ability. <br />
+   * Merged branches. <br />
+   * Allowed grab to tilt the screen and rotate. <br />
+   * Stopped NaN bug from crashing program. <br />
    
 #Progress: 
 
@@ -47,7 +54,8 @@ LeapMotion can talk to StreetView <br />
    * Map swipe up accesses first link on StreetView and updates the panorama to it. <br /> 
    * Map swipe down accesses rear link on StreetView and updates the panorama to face backwards. <br /> 
    * Added code to better utilize angle of pano in streetview. <br />
-
+   * Grab motion that allows motion forward and full spherical movement around pano. <br />
+    
 # Ideas
 
 A few things to keep in mind:
