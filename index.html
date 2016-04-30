@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Directly accessing Street View data</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body>
+
+    <script src="http://js.leapmotion.com/leap-0.6.3.min.js"></script>
+    <script src="logic.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRNG0NqLY73aM8hXVWn-Dfh9v8ZHMN12M&callback=initMap"
+            type="text/javascript"></script>
+
+    <div id="map" style="width: 45%; height: 100%;float:left"></div>
+    <div id="pano" style="width: 45%; height: 100%;float:right"></div>
+
+	<div id="floating-panel">
+    <table>
+      <tr>
+        <td><b>Position</b></td><td id="position-cell">&nbsp;</td>
+      </tr>
+      <table id="links_table"></table>
+    </table>
+    </div>
+
+    <div id="gestureData"></div>
+  </body>
+</html>
